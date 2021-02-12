@@ -1,4 +1,6 @@
 import numpy as np
+import math
+from scipy.stats import norm
 
 def buildTree(S, vol, T, N): 
     dt = T / N
@@ -18,10 +20,9 @@ def buildTree(S, vol, T, N):
             else:
                 matrix[i, j] = matrix[i-1, j-1] * u
 
-    print(matrix)
     return matrix
 
-def valueOptionMatrix(tree, T, r, K, vol, N):
+def valueOptionMatrix(tree, T, r, K, vol, N, option, origin):
     dt = T / N
     u = np.exp(vol * np.sqrt(dt))
     d = np.exp(-vol * np.sqrt(dt))
@@ -33,8 +34,10 @@ def valueOptionMatrix(tree, T, r, K, vol, N):
     # Add the payoff function in the last row 
     for c in np.arange(columns):
         S = tree[rows - 1, c] # value in the matrix 
-        value = S-K
-        tree[rows - 1, c] = value if value>0 else 0
+        if option == "Call":
+            tree[rows - 1, c] = max(0, S-K)
+        else:
+            tree[rows - 1, c] = max(0, K-S)
 
     # For all other rows, we need to combine from previous rows 
     # We walk backwards, from the last row to the first row
@@ -42,23 +45,55 @@ def valueOptionMatrix(tree, T, r, K, vol, N):
         for j in np.arange(i + 1):
             down = tree[i + 1, j]
             up = tree[i + 1, j + 1]
-            tree[i, j] = np.exp(-r*dt) * (p*up + (1-p)*down)
-
+            if origin == "American":
+                tree[i, j] = max(tree[i, j] - K, np.exp(-r*dt) * (p*up + (1-p)*down))
+            else:
+                tree[i, j] = np.exp(-r*dt) * (p*up + (1-p)*down)
     return tree
 
 sigma = 0.2
 S = 100
 T = 1
 N = 50
-
 tree = buildTree(S, sigma, T, N)
 
 K = 99
 r = 0.06
-value = valueOptionMatrix(tree, T, r, K, sigma, N)
+option = "Call"
+origin = "European"
+tree = valueOptionMatrix(tree, T, r, K, sigma, N, option, origin)
+print(f"{origin} {option} option value =", tree[0][0])
 
-print(value)
-print(value[0][0])
+# blackscholes
+t = 0
+tau = T - t
+d1 = np.log(S/K) + (r + 0.5 * sigma**2) * tau
+d1 = d1 / (sigma * np.sqrt(tau))
+d2 = d1 - sigma * np.sqrt(tau)
+Call = S * norm.cdf(d1) - np.exp(-r*tau) * K * norm.cdf(d2)
+Put = (np.exp(-r*tau) * K * norm.cdf(-d2)) - (S * norm.cdf(-d1))
+
+if option == "Call":
+    print("Black scholes call value =", Call)
+else:
+    print("Black shcoles put value =", Put)
+
+# 1.5
+dt = T / N
+u = np.exp(sigma * np.sqrt(dt))
+d = np.exp(-sigma * np.sqrt(dt))
+
+fu = tree[1][1]
+fd = tree[1][0]
+
+delta = (fu - fd) / (S * u - S * d)
+print("delta =", delta)
+print("analytical value =", norm.cdf(d1))
+
+origin = "American"
+tree = buildTree(S, sigma, T, N)
+tree = valueOptionMatrix(tree, T, r, K, sigma, N, option, origin)
+print(f"{origin} {option} option value = ", tree[0][0])
 
 # example from appendix A.1
 # u = 2
