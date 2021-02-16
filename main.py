@@ -1,6 +1,8 @@
 import numpy as np
 import math
 from scipy.stats import norm
+import random
+import matplotlib.pyplot as plt
 
 def buildTree(S, vol, T, N): 
     dt = T / N
@@ -110,3 +112,33 @@ print(f"{origin} {option} option value = ", tree[0][0])
 # p = (ert - d) / (u - d)
 # f0 = emin * (p*fu + (1-p)*fd)
 # print(f0)
+
+# 2.2
+sigma = 0.2
+r = 0.06
+S0 = 100
+K = 99
+T = 1
+M = 365 # weeks?
+dt = T/M
+
+d1s = []
+all_S = [S0]
+tau = 1
+for m in range(M):
+    z = np.random.normal(0, 1)
+    current_S = all_S[-1]
+    S = current_S + r*current_S*dt + sigma * current_S * np.sqrt(dt) * z
+
+    d1 = np.log(S/K) + (r + 0.5 * sigma**2) * tau
+    d1 = d1 / (sigma * np.sqrt(tau))
+
+    d1s.append(d1)
+    all_S.append(S)
+    tau -= dt
+
+
+plt.plot(range(M + 1), all_S)
+plt.xlabel("Time steps")
+plt.ylabel("Stock price")
+# plt.show()
