@@ -128,3 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 adrian.py
+adrian.ipynb
+.vscode/settings.json
