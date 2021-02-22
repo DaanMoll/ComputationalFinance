@@ -81,6 +81,7 @@ else:
     print("Black shcoles put value =", Put)
 
 # 1.5
+print("1.5")
 dt = T / N
 u = np.exp(sigma * np.sqrt(dt))
 d = np.exp(-sigma * np.sqrt(dt))
@@ -89,6 +90,7 @@ fu = tree[1][1]
 fd = tree[1][0]
 
 delta = (fu - fd) / (S * u - S * d)
+print("S", S)
 print("delta =", delta)
 print("analytical value =", norm.cdf(d1))
 
