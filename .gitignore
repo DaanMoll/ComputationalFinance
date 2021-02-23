@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .DS_Store
 main2.ipynb
+.idea
 
 # C extensions
 *.so
