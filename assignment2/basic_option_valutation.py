@@ -35,7 +35,7 @@ for n_paths in sample_paths:
     all_values = 0
 
     for _ in tqdm(range(n_paths)):
-        payoff = np.maximum(euler_option_valuation() - stock_price, 0)
+        payoff = np.maximum(euler_option_valuation() - strike_price, 0)
         option_value = np.exp(-r * t) * payoff
         all_values += option_value
 
