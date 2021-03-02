@@ -11,6 +11,7 @@ r = 0.06
 sigma = 0.2
 strike_price = 99
 stock_price = 100
+n_trajectories = int(1e6)
 
 
 @njit
@@ -37,16 +38,30 @@ def analytical_asian_option_valuation():
     return np.exp(-r * t) * (stock_price * np.exp(r_tilde * t) * norm.cdf(d1) - strike_price * norm.cdf(d2))
 
 
-n_paths = int(1e6)
-all_values = 0
-
-for _ in tqdm(range(n_paths)):
-    payoff = np.maximum(sum(euler_option_valuation()) / n - strike_price, 0)
-    option_value = np.exp(-r * t) * payoff
-    all_values += option_value
-
-average_value = all_values / n_paths
+analytical_option_value = analytical_asian_option_valuation()
 
 
-print(f'Analytical Asian option price value: {analytical_asian_option_valuation():.2f}')
-print(f'Euler Asian option price value: {analytical_asian_option_valuation():.2f}')
+def get_numerical_option_values(control_variate=False):
+    values = []
+
+    for _ in tqdm(range(n_trajectories)):
+        payoff = np.maximum(sum(euler_option_valuation()) / n - strike_price, 0)
+        option_value = np.exp(-r * t) * payoff
+        if control_variate:
+            option_value -= analytical_option_value
+        values.append(option_value)
+
+    return values
+
+
+euler_option_values = get_numerical_option_values()
+euler_option_values_cv = get_numerical_option_values(control_variate=True)
+
+euler_option_value = sum(euler_option_values) / n_trajectories
+euler_option_value_cv = sum(euler_option_values_cv) / n_trajectories + analytical_option_value
+
+print(f'Euler Asian option price value: {euler_option_value:.2f}')
+print(f'Euler Asian option price variance: {np.var(euler_option_values):.2f}')
+print(f'Euler Asian option price value: {euler_option_value_cv:.2f} (Control Variate)')
+print(f'Euler Asian option price variance: {np.var(euler_option_values_cv):.2f} (Control Variate)')
+print(f'Analytical Asian option price value: {analytical_option_value:.2f}')

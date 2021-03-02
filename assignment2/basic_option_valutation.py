@@ -28,23 +28,23 @@ def euler_option_valuation(plot=False):
 
 
 option_values = []
-sample_paths = 10 ** np.arange(2, 7, 0.5)
+sample_trajectories = 10 ** np.arange(2, 7, 0.5)
 
-for n_paths in sample_paths:
-    n_paths = int(n_paths)
+for n_trajectories in sample_trajectories:
+    n_trajectories = int(n_trajectories)
     all_values = 0
 
-    for _ in tqdm(range(n_paths)):
+    for _ in tqdm(range(n_trajectories)):
         payoff = np.maximum(euler_option_valuation() - strike_price, 0)
         option_value = np.exp(-r * t) * payoff
         all_values += option_value
 
-    average_value = all_values / n_paths
+    average_value = all_values / n_trajectories
     option_values.append(average_value)
 
-plt.plot(sample_paths, option_values, 'r-')
-plt.xlim(min(sample_paths), max(sample_paths))
+plt.plot(sample_trajectories, option_values, 'r-')
+plt.xlim(min(sample_trajectories), max(sample_trajectories))
 plt.xscale('log')
-plt.xlabel("# Sample Paths")
+plt.xlabel("# Sample trajectories")
 plt.ylabel("Option Value")
 plt.show()
