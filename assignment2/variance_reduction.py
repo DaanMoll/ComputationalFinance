@@ -67,7 +67,3 @@ print(f'Euler Asian option price variance: {np.var(euler_option_values):.2f}')
 print(f'Euler Asian option price value: {euler_option_value_cv:.2f} (Control Variate)')
 print(f'Euler Asian option price variance: {np.var(euler_option_values_cv):.2f} (Control Variate)')
 print(f'Analytical Asian option price value: {analytical_option_value:.2f}')
-
-"""
-
-"""
