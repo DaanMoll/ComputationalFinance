@@ -65,4 +65,4 @@ Vseps = both[1]
 print("V eps:", Vseps)
 
 delta = (Vseps - Vs) / epsilon
-print(delta)
+print("delta: ", delta)
