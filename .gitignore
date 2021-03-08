@@ -5,6 +5,7 @@ __pycache__/
 .DS_Store
 main2.ipynb
 .idea
+assignment2/basic_option_valutation2.py
 
 # C extensions
 *.so
