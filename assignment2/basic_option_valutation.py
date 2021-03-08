@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from numba import njit
 import pickle as pk
-
 t = 1
 dt = 1 / 365
 n = int(t / dt)
@@ -25,33 +24,33 @@ def euler_option_valuation():
     return stock_prices[-1]
 
 
-# option_values = []
-# option_values_errors = []
-# sample_trajectories = 10 ** np.arange(2, 6, 0.5)
-#
-# for n_trajectories in sample_trajectories:
-#     n_trajectories = int(n_trajectories)
-#     all_values = 0
-#     payoffs = []
-#     for _ in tqdm(range(n_trajectories)):
-#         payoff = np.maximum(strike_price - euler_option_valuation(), 0)
-#         option_value = np.exp(-r * t) * payoff
-#         payoffs.append(payoff)
-#         all_values += option_value
-#     print(payoffs)
-#
-#     average_value = all_values / n_trajectories
-#     option_values.append(average_value)
-#     option_values_errors.append(np.std(payoffs) / np.sqrt(n_trajectories))
-#
-#
-# plt.errorbar(sample_trajectories, option_values, option_values_errors, linestyle='None', marker='.', capsize=3)
-# # plt.plot(sample_trajectories, option_values, 'r-')
-# # plt.xlim(min(sample_trajectories), max(sample_trajectories))
-# plt.xscale('log')
-# plt.xlabel("# Sample trajectories")
-# plt.ylabel("Option Value")
-# plt.show()
+option_values = []
+option_values_errors = []
+sample_trajectories = 10 ** np.arange(2, 6, 0.5)
+
+for n_trajectories in sample_trajectories:
+    n_trajectories = int(n_trajectories)
+    all_values = 0
+    payoffs = []
+    for _ in tqdm(range(n_trajectories)):
+        payoff = np.maximum(strike_price - euler_option_valuation(), 0)
+        option_value = np.exp(-r * t) * payoff
+        payoffs.append(payoff)
+        all_values += option_value
+    print(payoffs)
+
+    average_value = all_values / n_trajectories
+    option_values.append(average_value)
+    option_values_errors.append(np.std(payoffs) / np.sqrt(n_trajectories))
+
+
+plt.errorbar(sample_trajectories, option_values, option_values_errors, linestyle='None', marker='.', capsize=3)
+# plt.plot(sample_trajectories, option_values, 'r-')
+# plt.xlim(min(sample_trajectories), max(sample_trajectories))
+plt.xscale('log')
+plt.xlabel("# Sample trajectories")
+plt.ylabel("Option Value")
+plt.show()
 
 
 n_trajectories = int(1e5)
