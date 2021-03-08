@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 from tqdm import tqdm
 from numba import njit
+from scipy.stats.mstats import gmean
 
 t = 1
 dt = 1 / 365
@@ -44,14 +45,30 @@ analytical_option_value = analytical_asian_option_valuation()
 def get_numerical_option_values(control_variate=False):
     values = []
 
+    ameans = []
+    gmeans = []
+
     for _ in tqdm(range(n_trajectories)):
         trajectory = np.array(euler_option_valuation())
+        arithmetic_mean = sum(trajectory) / n
         if control_variate:
-            payoff = np.maximum(sum(trajectory - analytical_asian_option_valuation(trajectory[-1])) / n - strike_price, 0)
+            analytical = analytical_asian_option_valuation()
+            geometric_mean = gmean(trajectory)
+            ameans.append(arithmetic_mean)
+            gmeans.append(geometric_mean)
+            beta = 1.0123
+            payoff = np.maximum(arithmetic_mean - beta * (geometric_mean - analytical) - strike_price, 0)
         else:
-            payoff = np.maximum(sum(trajectory) / n - strike_price, 0)
+            payoff = np.maximum(arithmetic_mean - strike_price, 0)
         payoff *= np.exp(-r * t)
         values.append(payoff)
+
+    if control_variate:
+        sigma_a = np.std(ameans)
+        sigma_g = np.std(gmeans)
+        correlation = np.cov(ameans, gmeans)[0, 1] / sigma_a / sigma_g
+        print(f"Correlation: {correlation}")
+        print(f"optimal beta value: {sigma_a / sigma_g * correlation}")
 
     return values
 
@@ -62,8 +79,12 @@ euler_option_values_cv = get_numerical_option_values(control_variate=True)
 euler_option_value = sum(euler_option_values) / n_trajectories
 euler_option_value_cv = sum(euler_option_values_cv) / n_trajectories + analytical_option_value
 
-print(f'Euler Asian option price value: {euler_option_value:.2f}')
-print(f'Euler Asian option price variance: {np.var(euler_option_values):.2f}')
-print(f'Euler Asian option price value: {euler_option_value_cv:.2f} (Control Variate)')
-print(f'Euler Asian option price variance: {np.var(euler_option_values_cv):.2f} (Control Variate)')
-print(f'Analytical Asian option price value: {analytical_option_value:.2f}')
+print(f'Euler Asian option price value: {euler_option_value}')
+print(f'Euler Asian option price variance: {np.var(euler_option_values)}')
+print(f'Euler Asian option price value: {euler_option_value_cv} (Control Variate)')
+print(f'Euler Asian option price variance: {np.var(euler_option_values_cv)} (Control Variate)')
+print(f'Analytical Asian option price value: {analytical_option_value}')
+
+
+
+
