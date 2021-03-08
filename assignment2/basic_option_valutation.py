@@ -55,7 +55,7 @@ plt.show()
 
 n_trajectories = int(1e5)
 
-for strike_price in [50, 75, 100, 125, 150]:
+for sigma in [0.2, 0.4, 0.6, 0.8, 1.0]:
     all_values = 0
     payoffs = []
     for _ in range(n_trajectories):

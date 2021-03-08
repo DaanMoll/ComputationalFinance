@@ -48,7 +48,7 @@ def get_numerical_option_values(control_variate=False):
     ameans = []
     gmeans = []
 
-    for _ in tqdm(range(n_trajectories)):
+    for _ in range(n_trajectories):
         trajectory = np.array(euler_option_valuation())
         arithmetic_mean = sum(trajectory) / n
         if control_variate:
@@ -57,7 +57,7 @@ def get_numerical_option_values(control_variate=False):
             ameans.append(arithmetic_mean)
             gmeans.append(geometric_mean)
             beta = 1.0123
-            payoff = np.maximum(arithmetic_mean - beta * (geometric_mean - analytical) - strike_price, 0)
+            payoff = np.maximum(arithmetic_mean - beta * (geometric_mean - analytical), 0)
         else:
             payoff = np.maximum(arithmetic_mean - strike_price, 0)
         payoff *= np.exp(-r * t)
@@ -73,18 +73,22 @@ def get_numerical_option_values(control_variate=False):
     return values
 
 
-euler_option_values = get_numerical_option_values()
 euler_option_values_cv = get_numerical_option_values(control_variate=True)
+# euler_option_values = get_numerical_option_values()
 
-euler_option_value = sum(euler_option_values) / n_trajectories
+# euler_option_value = sum(euler_option_values) / n_trajectories
 euler_option_value_cv = sum(euler_option_values_cv) / n_trajectories + analytical_option_value
 
-print(f'Euler Asian option price value: {euler_option_value}')
-print(f'Euler Asian option price variance: {np.var(euler_option_values)}')
+# print(f'Euler Asian option price value: {euler_option_value}')
+# print(f'Euler Asian option price variance: {np.var(euler_option_values)}')
 print(f'Euler Asian option price value: {euler_option_value_cv} (Control Variate)')
 print(f'Euler Asian option price variance: {np.var(euler_option_values_cv)} (Control Variate)')
 print(f'Analytical Asian option price value: {analytical_option_value}')
 
 
-
-
+for n_trajectories in [10, 100, 1000, 10000, 100000]:
+    print(f"n: {n_trajectories}")
+    euler_option_values_cv = get_numerical_option_values(control_variate=True)
+    euler_option_value_cv = sum(euler_option_values_cv) / n_trajectories + analytical_option_value
+    print(f'Euler Asian option price value: {euler_option_value_cv} (Control Variate)')
+    print(f'Euler Asian option price variance: {np.var(euler_option_values_cv)} (Control Variate)')
