@@ -59,15 +59,13 @@ def euler_option_valuation(plot=False):
 
 
 normal_results = {}
-for _ in range(1):
-    strike_price = strike_price
-    option_values = []
-    sample_std = []
-    sample_trajectories = 10 ** np.arange(2, 6, 0.35)
-    
-    for n_trajectories in tqdm(10000):
-        n_trajectories = int(n_trajectories)
 
+variance_results = {}
+for var in range(1):
+    traj_results  = {}
+    sample_trajectories = 10 ** np.arange(2, 5, 0.5)
+    for n_trajectories in tqdm(sample_trajectories):
+        n_trajectories = int(n_trajectories)
         all_values = []
         # One repetition is one option value. N_trajectories -> n_option values
         for _ in range(n_trajectories):
@@ -78,10 +76,10 @@ for _ in range(1):
                 values.append(option_value)
             average_value = np.mean(values)
             all_values.append(average_value)
-        # One average of many option values -> one MC estimate for the option price
-        option_values.append(np.mean(all_values))
-        sample_std.append(np.std(all_values))
-    normal_results["results"] = [option_values, sample_std]
+
+        n_trajectory_result = [np.mean(all_values), np.std(all_values)]
+        traj_results[n_trajectories]=n_trajectory_result
+    normal_results = traj_results
 
 with open('normal.pickle', 'wb') as handle:
     pickle.dump(normal_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -91,15 +89,15 @@ with open('normal.pickle', 'wb') as handle:
 variances = [0.10, 0.20, 0.40, 0.60]
 strikes = [99, 90, 80, 70, 60, 50]
 
+
 strike_results = {}
 for strike in strikes:
     strike_price = strike
-    option_values = []
-    sample_std = []
+    sigma = var
+    traj_results  = {}
     sample_trajectories = 10 ** np.arange(2, 5, 0.5)
-    for n_trajectories in tqdm(10000):
+    for n_trajectories in tqdm(sample_trajectories):
         n_trajectories = int(n_trajectories)
-
         all_values = []
         # One repetition is one option value. N_trajectories -> n_option values
         for _ in range(n_trajectories):
@@ -110,10 +108,10 @@ for strike in strikes:
                 values.append(option_value)
             average_value = np.mean(values)
             all_values.append(average_value)
-        # One average of many option values -> one MC estimate for the option price
-        option_values.append(np.mean(all_values))
-        sample_std.append(np.std(all_values))
-    strike_results[strike]=[option_values, sample_std]
+
+        n_trajectory_result = [np.mean(all_values), np.std(all_values)]
+        traj_results[n_trajectories]=n_trajectory_result
+    strike_results[strike] = traj_results
 
 with open('strike.pickle', 'wb') as handle:
     pickle.dump(strike_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -130,14 +128,12 @@ stock_price = 100
 
 
 variance_results = {}
-for var in strikes:
+for var in variances:
     sigma = var
-    option_values = []
-    sample_std = []
+    traj_results  = {}
     sample_trajectories = 10 ** np.arange(2, 5, 0.5)
-    for n_trajectories in tqdm(10000):
+    for n_trajectories in tqdm(sample_trajectories):
         n_trajectories = int(n_trajectories)
-
         all_values = []
         # One repetition is one option value. N_trajectories -> n_option values
         for _ in range(n_trajectories):
@@ -148,10 +144,10 @@ for var in strikes:
                 values.append(option_value)
             average_value = np.mean(values)
             all_values.append(average_value)
-        # One average of many option values -> one MC estimate for the option price
-        option_values.append(np.mean(all_values))
-        sample_std.append(np.std(all_values))
-    strike_results[strike] = [option_values, sample_std]
+
+        n_trajectory_result = [np.mean(all_values), np.std(all_values)]
+        traj_results[n_trajectories]=n_trajectory_result
+    strike_results[var] = traj_results
 
 with open('variances.pickle', 'wb') as handle:
     pickle.dump(variance_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
