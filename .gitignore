@@ -6,6 +6,7 @@ __pycache__/
 main2.ipynb
 .idea
 assignment2/basic_option_valutation2.py
+assignment2/hoi.py
 
 # C extensions
 *.so

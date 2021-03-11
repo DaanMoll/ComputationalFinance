@@ -2,10 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from numba import njit
+from scipy.stats import norm
 
 # Euler, bump and revalue
 t = 1
-M = 365
+M = 52
 dt = 1 / M
 n = int(t / dt)
 r = 0.06
@@ -13,6 +14,20 @@ sigma = 0.2
 strike_price = 99
 stock_price = 100
 epsilon = 0.01
+
+def digital_blackSholes():
+    # Time to maturity
+    S = 100
+    K = 99
+    r = 0.06
+    sigma = 0.2
+    tau = 1
+
+    d2 = (np.log(S/K) + (r - (sigma**2 / 2)*tau)) / (sigma * np.sqrt(tau))
+    
+    delta = (np.exp(-r * tau) * norm.pdf(d2)) / (sigma * S * np.sqrt(tau))
+    return delta
+
 
 @njit
 def euler_option_valuation(epsilon, plot=False):
@@ -40,14 +55,14 @@ def delta_valuation():
 
         payoff = np.maximum(euler[0] - strike_price, 0)
         option_value = np.exp(-r * t) * payoff
-        if option_value > 1:
-            option_value = 1
+        # if option_value > 1:
+        #     option_value = 1
         all_values += option_value
 
         payoff_eps = np.maximum(euler[1] - strike_price, 0)
         option_value_eps = np.exp(-r * t) * payoff_eps
-        if option_value_eps > 1:
-            option_value_eps = 1
+        # if option_value_eps > 1:
+        #     option_value_eps = 1
         eps_values += option_value_eps
 
     average_value = all_values / runs
@@ -66,3 +81,6 @@ print("V eps:", Vseps)
 
 delta = (Vseps - Vs) / epsilon
 print("delta: ", delta)
+
+delta_bs = digital_blackSholes()
+print("bs: ", delta_bs)

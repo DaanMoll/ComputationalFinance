@@ -12,26 +12,13 @@ r = 0.06
 sigma = 0.2
 
 @njit
-def get_analytical_delta(ST):
-    d2 = (np.log(ST/K)+(r-(sigma**2)/2))/sigma * np.sqrt(T)
-
-    def normal_cdf(x):
-        q = math.erf(x / math.sqrt(2.0))
-        return (1.0 + q) / 2.0
-
-    analytical_delta = (np.exp(-r * T) * normal_cdf(d2)) / \
-        (sigma * ST * np.sqrt(1))
-    return analytical_delta
-
-
-@njit
 def digital_option(n_iter):
     deltas = []
     errors = []
     for i in range(n_iter):
         phi = np.random.standard_normal()
         ST = S0 * np.exp((r - 0.5 * sigma ** 2) * T + sigma * np.sqrt(T) * phi)
-        true_delta = get_analytical_delta(ST)
+        true_delta = .018206369779490493
         # print(true_delta)
         # Check if digital option pays off
         if ST-K > 0:
@@ -67,8 +54,10 @@ for key in results.keys():
 
 with open('likelihood.pickle', 'wb') as handle:
     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
-# Part 2
 
+
+exit()
+# Part 2
 @njit
 def digital_delta_bumped(n_iter, epsilon):
     seed = np.random.seed(np.random.randint(300))
@@ -79,7 +68,7 @@ def digital_delta_bumped(n_iter, epsilon):
     delta = (np.mean(np.array(bumped_values)) -
                 np.mean(np.array(unbumped_values))) / epsilon
     mean_st_true = (final_st+final_st_2)/2
-    analytical = get_analytical_delta(np.mean(np.array(mean_st_true)))
+    analytical = .018206369779490493
     error = abs(delta-analytical)
     return delta, error
 
@@ -129,4 +118,4 @@ for epsilon in errors:
     results_2[epsilon] = experiment_results
 
 with open('bump.pickle', 'wb') as handle:
-    pickle.dump(results_@, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
