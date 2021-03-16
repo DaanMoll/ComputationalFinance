@@ -63,5 +63,5 @@ def fd_cd(N, M, T, S_0, S_max, K, r, sigma):
     return grid, option_value
 
 
-grid, value = fd_cd(500, 500, 1, 100, 200, 99, 0.06, 0.2)
-grid, value = fd_cd(2000, 200, 5/12, 50, 100, 50, 0.06, 0.4)
+# grid, value = fd_cd(500, 500, 1, 100, 200, 99, 0.06, 0.2)
+# grid, value = fd_cd(2000, 200, 5/12, 50, 100, 50, 0.06, 0.4)

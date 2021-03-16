@@ -56,4 +56,4 @@ def ftcs(N, M, T, S_0, S_max, K, r, sigma):
     return grid, option_value
 
 
-grid, value = ftcs(1000, 100, 5/12, 50, 100, 50, 0.06, 0.4)
+# grid, value = ftcs(1000, 100, 5/12, 50, 100, 50, 0.06, 0.4)
