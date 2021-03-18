@@ -10,8 +10,8 @@ def fd_cd(N, M, T, S_0, S_max, K, r, sigma):
     M -> Number of grid spaces
     S_max -> Maximum stock price 
     '''
-
-    dt = T / N  # Time step 
+    dt = T / N  # Time step
+    S_max = 2 * S_0
     dS = S_max / M # Space step
 
     #  S0   [i = 1]
@@ -41,7 +41,7 @@ def fd_cd(N, M, T, S_0, S_max, K, r, sigma):
     B[-1, -1] -= 2*gamma[-1]
     B[-1, -2] += gamma[-1]
 
-    # Side boundary conditionS
+    # # Side boundary conditionS
     A[0,   0] += 2*alpha[0]
     A[0,   1] -= alpha[0]
     A[-1, -1] += 2*gamma[-1]
@@ -59,9 +59,9 @@ def fd_cd(N, M, T, S_0, S_max, K, r, sigma):
         grid[-1, j] = 2 * grid[-2, j] - grid[-3, j]
 
     option_value = grid[:, 0][int(len(grid)/2)]
-    print(f"Estimated option value: {option_value}")
+    # print(f"Estimated option value: {option_value}")
     return grid, option_value
 
 
-# grid, value = fd_cd(500, 500, 1, 100, 200, 99, 0.06, 0.2)
-# grid, value = fd_cd(2000, 200, 5/12, 50, 100, 50, 0.06, 0.4)
+# grid, value = fd_cd(500, 100, 1, 100, 200, 99, 0.06, 0.2)
+# grid, value = fd_cd(1000, 500, 1, 50, 100, 50, 0.06, 0.4)
