@@ -5,16 +5,20 @@ from tqdm import tqdm
 from numba import njit
 
 # @njit
-def ftcs(N, M, T, S_0, S_max, K, r, sigma):
+def ftcs(N, M, T, S_0, S_max, K, r, sigma, optimal_delta=True):
     '''
     N -> Number of time steps
     M -> Number of grid spaces
     S_max -> Maximum stock price 
     '''
-
-    dt = T / N  # Time step
+    if optimal_delta:
+        dt = 0.0005
+        N = int(T/dt)
+    else:
+        # print(N  )
+        dt = T / N  # Time step
     dS = S_max / M  # Space step
-
+    # print(dt)
     #  S0   [i = 1]
     #  S    [i = 2]
     #  Smax [i = M]
@@ -47,13 +51,20 @@ def ftcs(N, M, T, S_0, S_max, K, r, sigma):
 
     # Iterate over the grid
     for j in reversed(all_j):
+            old_grid = grid.copy()
             grid[1:-1, j] = np.dot(A, grid[1:-1, j+1])
             grid[0, j] = 2 * grid[1, j] - grid[2, j]
             grid[-1, j] = 2 * grid[-2, j] - grid[-3, j]
+            if np.isnan(grid[:, 0][int(len(grid)/2)]):
+                    print("Abort")
+                    option_value = old_grid[:, 0][int(len(grid)/2)]
+                    print(f"Estimated option value: {option_value}")
+                    return old_grid, option_value
 
     option_value = grid[:, 0][int(len(grid)/2)]
-    print(f"Estimated option value: {option_value}")
+    # print(f"Estimated option value: {option_value}")
     return grid, option_value
 
 
 # grid, value = ftcs(1000, 100, 5/12, 50, 100, 50, 0.06, 0.4)
+# grid, value = ftcs(1000, 1000, 1, 50, 200, 50, 0.04, 0.3)

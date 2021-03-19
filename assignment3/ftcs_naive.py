@@ -9,7 +9,7 @@ def ftcs_loop(N, M, T, S_0, S_max, K, r, sigma):
     '''
     N -> Number of time steps
     M -> Number of grid spaces
-    S_max -> Maximum stock price 
+    S_max -> Maximum stock price
     '''
     dt = T/N
     all_S = np.linspace(0, S_max, M+1)
