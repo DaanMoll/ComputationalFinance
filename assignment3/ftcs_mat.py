@@ -11,6 +11,7 @@ def ftcs(N, M, T, S_0, S_max, K, r, sigma, optimal_delta=True):
     M -> Number of grid spaces
     S_max -> Maximum stock price 
     '''
+    S_max = 2 * S_0
     if optimal_delta:
         dt = 0.0005
         N = int(T/dt)
@@ -57,11 +58,13 @@ def ftcs(N, M, T, S_0, S_max, K, r, sigma, optimal_delta=True):
             grid[-1, j] = 2 * grid[-2, j] - grid[-3, j]
             if np.isnan(grid[:, 0][int(len(grid)/2)]):
                     print("Abort")
-                    option_value = old_grid[:, 0][int(len(grid)/2)]
+                    # option_value = old_grid[:, 0][int(len(grid)/2)]
+                    option_value = np.interp(S_0, all_S, grid[:, 0])
                     print(f"Estimated option value: {option_value}")
                     return old_grid, option_value
 
-    option_value = grid[:, 0][int(len(grid)/2)]
+    # option_value = grid[:, 0][int(len(grid)/2)]
+    option_value = np.interp(S_0, all_S, grid[:, 0])
     # print(f"Estimated option value: {option_value}")
     return grid, option_value
 
