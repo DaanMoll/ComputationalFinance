@@ -4,14 +4,17 @@ import scipy.linalg as linalg
 from tqdm import tqdm
 from numba import njit
 
-# @njit
+@njit
 def ftcs_loop(N, M, T, S_0, S_max, K, r, sigma):
     '''
     N -> Number of time steps
     M -> Number of grid spaces
     S_max -> Maximum stock price
     '''
-    dt = T/N
+    # dt = T/N
+    dt = 0.000001
+    N = int(T/dt)
+    S_max = 2 * S_0
     all_S = np.linspace(0, S_max, M+1)
 
     # Populate the price grid with the the values
@@ -33,9 +36,11 @@ def ftcs_loop(N, M, T, S_0, S_max, K, r, sigma):
             # Next grid point
             grid[i] = alpha * grid_n[i-1] + (beta) * grid_n[i] + gamma * grid_n[i+1]
 
-    option_value = grid[int(M/2)]
-    print(f"Estimated option value: {option_value}")
+    # option_value = grid[int(M/2)]
+    option_value = np.interp(S_0, all_S, grid)
+    # print(f"Estimated option value: {option_value}")
     return grid, option_value
 
 
-grid, value = ftcs_loop(1000, 100, 5/12, 50, 100, 50, 0.06, 0.4)
+grid, value = ftcs_loop(1000, 500, 5/12, 50, 100, 50, 0.06, 0.4)
+value

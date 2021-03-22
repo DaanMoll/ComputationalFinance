@@ -58,10 +58,11 @@ def fd_cd(N, M, T, S_0, S_max, K, r, sigma):
         grid[0, j] = 2 * grid[1, j] - grid[2, j]
         grid[-1, j] = 2 * grid[-2, j] - grid[-3, j]
 
-    option_value = grid[:, 0][int(len(grid)/2)]
+    # option_value = grid[:, 0][int(len(grid)/2)]
+    option_value = np.interp(S_0,all_S,grid[:, 0])
     # print(f"Estimated option value: {option_value}")
     return grid, option_value
 
 
-# grid, value = fd_cd(500, 100, 1, 100, 200, 99, 0.06, 0.2)
+grid, value = fd_cd(500, 100, 1, 100, 200, 99, 0.06, 0.2)
 # grid, value = fd_cd(1000, 500, 1, 50, 100, 50, 0.06, 0.4)
